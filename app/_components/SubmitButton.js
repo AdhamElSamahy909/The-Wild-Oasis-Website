@@ -1,10 +1,6 @@
 "use client";
 
-import { useFormStatus } from "react-dom";
-
-function SubmitButton({ pendingLabel, children }) {
-  const { pending } = useFormStatus();
-
+function SubmitButton({ pending, pendingLabel, children }) {
   console.log("Pending: ", pending);
 
   return (

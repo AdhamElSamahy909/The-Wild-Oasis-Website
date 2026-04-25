@@ -1,5 +1,7 @@
 import { auth } from "../_lib/auth";
 
+export const runtime = "edge";
+
 export const metadata = {
   title: "Guest area",
 };

@@ -36,7 +36,7 @@ export const getCabins = async function () {
 export async function getCountries() {
   try {
     const res = await fetch(
-      "https://countriesnow.space/api/v0.1/countries/flag/images"
+      "https://countriesnow.space/api/v0.1/countries/flag/images",
     );
     let countries = await res.json();
     countries = countries.data;
@@ -59,18 +59,23 @@ export async function getGuest(email) {
 }
 
 export async function getBookings(guestId) {
+  console.log("Getting bookings for guestId: ", guestId);
   const { data, error, count } = await supabase
     .from("bookings")
     .select(
-      "id, created_at, startDate, endDate, numNights, numGuests, totalPrice, guestId, cabinId, cabins(name, image)"
+      "id, created_at, startDate, endDate, numNights, numGuests, totalPrice, guestId, cabinId, cabins(name, image)",
     )
     .eq("guestId", guestId)
     .order("startDate");
 
   if (error) {
+    console.log("ERROR: ", error);
     console.error(error);
-    throw new Error("Bookings could not be loaded");
+    return { error: error.message || "Bookings could not be loaded" };
+    // throw new Error("Bookings could not be loaded");
   }
+
+  console.log("Bookings: ", data);
 
   return data;
 }

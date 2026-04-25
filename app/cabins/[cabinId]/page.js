@@ -4,6 +4,10 @@ import Spinner from "@/app/_components/Spinner";
 import { getCabin, getCabins } from "@/app/_lib/data-service";
 import { Suspense } from "react";
 
+export const runtime = "edge";
+
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }) {
   const { cabinId } = await params;
   const { name } = await getCabin(cabinId);
@@ -11,14 +15,6 @@ export async function generateMetadata({ params }) {
   return {
     title: `Cabin ${name}`,
   };
-}
-
-export async function generateStaticParams() {
-  const cabins = await getCabins();
-
-  const ids = cabins.map((canin) => ({ cabinId: String(canin.id) }));
-
-  return ids;
 }
 
 export default async function Page({ params }) {

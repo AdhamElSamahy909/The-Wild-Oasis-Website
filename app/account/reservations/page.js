@@ -3,6 +3,8 @@ import { auth } from "@/app/_lib/auth";
 import { getBookings } from "@/app/_lib/data-service";
 import Link from "next/link";
 
+export const runtime = "edge";
+
 export const metadata = {
   title: "Reservations",
 };
@@ -10,7 +12,9 @@ export const metadata = {
 export default async function Page() {
   const session = await auth();
   console.log("session: ", session);
-  const bookings = await getBookings(session?.user?.guestId);
+  const guestId = session?.user?.id;
+  console.log("guestId: ", guestId);
+  const bookings = await getBookings(guestId);
 
   return (
     <div>
@@ -20,7 +24,7 @@ export default async function Page() {
 
       {bookings.length === 0 ? (
         <p className="text-lg">
-          You have no reservations yet. Check out our
+          You have no reservations yet. Check out our{" "}
           <Link className="underline text-accent-500" href="/cabins">
             luxury cabins &rarr;
           </Link>

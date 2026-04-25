@@ -5,9 +5,10 @@ import LoginMessage from "./LoginMessage";
 import ReservationForm from "./ReservationForm";
 
 export default async function Reservation({ cabin }) {
+  console.log("cabin in reservation: ", cabin);
   const [settings, bookedDates] = await Promise.all([
     getSettings(),
-    getBookedDatesByCabinId(cabin.id),
+    getBookedDatesByCabinId(cabin?.id),
   ]);
   const session = await auth();
 
@@ -19,7 +20,7 @@ export default async function Reservation({ cabin }) {
         cabin={cabin}
       />
       {session?.user ? (
-        <ReservationForm cabin={cabin} user={session.user} />
+        <ReservationForm cabin={cabin} user={session?.user} />
       ) : (
         <LoginMessage />
       )}

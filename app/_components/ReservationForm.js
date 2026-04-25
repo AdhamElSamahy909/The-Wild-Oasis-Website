@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useReservation } from "./ReservationContext";
 import { differenceInDays, formatISO, isValid } from "date-fns";
 import { createReservation } from "../_lib/actions";
@@ -38,30 +37,41 @@ function ReservationForm({ cabin, user }) {
   // CHANGE
   // const maxCapacity = 23;
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const result = await createReservationWithData(
+        new FormData(e.currentTarget),
+      );
+
+      if (result?.error) {
+        console.error("Failed to create reservation", result.error);
+        return;
+      }
+
+      resetRange();
+      window.location.href = `/cabins/${id}`;
+    } catch (error) {
+      console.error("Failed to create reservation", error);
+    }
+  };
+
   return (
     <div className="scale-[1.01] col-span-2 xl:col-span-1 row-span-1 h-full">
       <div className="bg-primary-800 text-primary-300 px-8 xl:px-16 py-2 flex justify-between items-center">
         <p>Logged in as</p>
 
         <div className="flex gap-4 items-center">
-          <Image
-            // Important to display google profile images
-            referrerPolicy="no-referrer"
-            className="h-8 rounded-full"
-            src={user.image}
-            alt={user.name}
-            width={32}
-            height={32}
-          />
-          <p>{user.name}</p>
+          <p>{user.email}</p>
         </div>
       </div>
 
       <form
-        action={async (formData) => {
-          await createReservationWithData(formData);
-          resetRange();
-        }}
+        // action={async (formData) => {
+        //   await createReservationWithData(formData);
+        //   resetRange();
+        // }}
+        onSubmit={handleSubmit}
         className="bg-primary-900 h-[calc(100%-3rem)] py-5 xl:py-10 px-6 xl:px-16 text-lg flex gap-5 flex-col"
       >
         <div className="space-y-2">

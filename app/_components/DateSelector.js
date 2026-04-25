@@ -14,7 +14,7 @@ import { useReservation } from "./ReservationContext";
 function isAlreadyBooked(range, datesArr) {
   return range?.from && range?.to
     ? datesArr.some((date) =>
-        isWithinInterval(date, { start: range.from, end: range.to })
+        isWithinInterval(date, { start: range.from, end: range.to }),
       )
     : null;
 }
@@ -41,7 +41,7 @@ function DateSelector({ settings, cabin, bookedDates }) {
         onSelect={setRange}
         disabled={[
           { before: new Date() },
-          ...bookedDates.map((date) => new Date(date)),
+          ...bookedDates?.map((date) => new Date(date)),
         ]}
         modifiers={{
           range: displayRange,

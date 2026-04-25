@@ -1,54 +1,117 @@
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
-import { createGuest, getGuest } from "./data-service";
+import { compareSync } from "bcrypt-ts";
+import Credentials from "next-auth/providers/credentials";
+import { supabase } from "./supabase";
 
-export const {
-  handlers: { GET, POST },
-  auth,
-  signIn,
-  signOut,
-} = NextAuth({
+export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
-    }),
-  ],
-  //secret: process.env.NEXTAUTH_SECRET,
-  callbacks: {
-    authorized({ auth, request }) {
-      return !!auth?.user;
-    },
-
-    async signIn({ user, account, profile }) {
-      try {
-        const existingGuest = await getGuest(user.email);
-
-        if (!existingGuest) {
-          await createGuest({
-            email: user.email,
-            fullName: user.name,
-          });
+    Credentials({
+      name: "Credential",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
         }
 
-        return true;
-      } catch (error) {
-        return false;
-      }
-    },
+        const { data: user, error } = await supabase
+          .from("guests")
+          .select("*")
+          .eq("email", credentials.email)
+          .single();
 
-    async session({ session, user }) {
-      const guest = await getGuest(session.user.email);
+        if (error || !user) {
+          return null;
+        }
 
-      console.log("guest:", guest);
+        const passwordsMatch = compareSync(credentials.password, user.password);
 
-      session.user.guestId = guest.id;
+        console.log("User found: ", user);
 
-      return session;
-    },
-  },
+        if (passwordsMatch) {
+          return { id: user.id, email: user.email };
+        }
 
+        return null;
+      },
+    }),
+  ],
   pages: {
     signIn: "/login",
   },
+  session: {
+    strategy: "jwt",
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id;
+      }
+
+      return session;
+    },
+    authorized({ auth }) {
+      return !!auth;
+    },
+  },
 });
+
+// export const {
+//   handlers: { GET, POST },
+//   auth,
+//   signIn,
+//   signOut,
+// } = NextAuth({
+//   providers: [
+//     Google({
+//       clientId: process.env.AUTH_GOOGLE_ID,
+//       clientSecret: process.env.AUTH_GOOGLE_SECRET,
+//     }),
+//   ],
+//   //secret: process.env.NEXTAUTH_SECRET,
+//   callbacks: {
+//     authorized({ auth, request }) {
+//       return !!auth?.user;
+//     },
+
+//     async signIn({ user, account, profile }) {
+//       try {
+//         const existingGuest = await getGuest(user.email);
+
+//         if (!existingGuest) {
+//           await createGuest({
+//             email: user.email,
+//             fullName: user.name,
+//           });
+//         }
+
+//         return true;
+//       } catch (error) {
+//         return false;
+//       }
+//     },
+
+//     async session({ session, user }) {
+//       const guest = await getGuest(session.user.email);
+
+//       console.log("guest:", guest);
+
+//       session.user.guestId = guest.id;
+
+//       return session;
+//     },
+//   },
+
+//   pages: {
+//     signIn: "/login",
+//   },
+// });

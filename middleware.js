@@ -1,6 +1,14 @@
 import { auth } from "@/app/_lib/auth";
-export const middleware = auth;
+import { NextResponse } from "next/server";
+
+export default auth((req) => {
+  const isLoggedIn = !!req.auth;
+
+  if (!isLoggedIn) {
+    return NextResponse.redirect(new URL("/login", req.nextUrl));
+  }
+});
 
 export const config = {
-  matcher: ["/account"],
+  matcher: ["/account", "/account/:path*"],
 };

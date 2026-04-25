@@ -1,5 +1,7 @@
 import { getBookedDatesByCabinId, getCabin } from "@/app/_lib/data-service";
 
+export const runtime = "edge";
+
 export async function GET(request, { params }) {
   const { cabinId } = params;
 

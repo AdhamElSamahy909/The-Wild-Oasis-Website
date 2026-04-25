@@ -3,6 +3,8 @@ import img1 from "@/public/about-1.jpg";
 import { getCabins } from "../_lib/data-service";
 import Link from "next/link";
 
+export const runtime = "edge";
+
 export const revalidate = 82400;
 
 export const metadata = {
@@ -41,10 +43,11 @@ export default async function Page() {
         </div>
       </div>
 
-      <div className="xl:col-span-2 col-span-5">
+      <div className="xl:col-span-2 col-span-5 relative aspect-square">
         <Image
           src={img1}
           alt="Family sitting around a fire pit in front of cabin"
+          fill
           placeholder="blur"
         />
       </div>

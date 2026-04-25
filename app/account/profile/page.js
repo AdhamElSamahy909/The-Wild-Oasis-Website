@@ -2,13 +2,19 @@ import SelectCountry from "@/app/_components/SelectCountry";
 import UpdateProfileForm from "@/app/_components/UpdateProfileForm";
 import { auth } from "@/app/_lib/auth";
 import { getGuest } from "@/app/_lib/data-service";
+// import { redirect } from "next/navigation";
 
-export function generateStaticParams() {
-  return { cache: "no-store" };
-}
+export const runtime = "edge";
+
+export const dynamic = "force-dynamic";
 
 export default async function Page() {
   const session = await auth();
+
+  // if (!session) {
+  //   redirect("/login");
+  // }
+
   const guest = await getGuest(session.user.email);
 
   console.log("Guest2: ", guest);

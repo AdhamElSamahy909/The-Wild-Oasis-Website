@@ -4,6 +4,8 @@ import Spinner from "../_components/Spinner";
 import CabinList from "@/app/_components/CabinList";
 import ReservationReminder from "@/app/_components/ReservationReminder";
 
+export const runtime = "edge";
+
 export const metadata = {
   title: "Cabins",
 };

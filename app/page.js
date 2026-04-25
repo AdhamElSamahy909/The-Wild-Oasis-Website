@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import bg from "@/public/bg.png";
 
+export const runtime = "edge";
+
 export default function Home() {
   return (
     <main className="mt-24">
