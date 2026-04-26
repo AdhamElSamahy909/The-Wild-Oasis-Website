@@ -1,29 +1,32 @@
 "use client";
 
-import { useOptimistic, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { deleteReservation } from "../_lib/actions";
 import ReservationCard from "./ReservationCard";
 
 function ReservationList({ bookings }) {
   console.log("Bookings in ReservationList: ", bookings);
   const [isPending, startTransition] = useTransition();
-  const [optimisticBookings, optimisticDelete] = useOptimistic(
-    bookings,
-    (curBookings, bookingId) => {
-      return curBookings.filter((bookings) => bookings?.id !== bookingId);
-    },
-  );
+  const [deletedIds, setDeletedIds] = useState([]);
 
   async function handleDelete(bookingId) {
+    setDeletedIds((prev) => [...prev, bookingId]);
+
     startTransition(async () => {
-      optimisticDelete(bookingId);
-      await deleteReservation(bookingId);
-      window.location.href = "/account/reservations";
+      try {
+        await deleteReservation(bookingId);
+        window.location.href = "/account/reservations";
+      } catch (error) {
+        console.error("Failed to delete reservation: ", error);
+        setDeletedIds((prev) => prev.filter((id) => id !== bookingId));
+        alert("Failed to delete reservation. Please try again.");
+      }
     });
-    // optimisticDelete(bookingId);
-    // await deleteReservation(bookingId);
-    // window.location.href = "/account/reservations";
   }
+
+  const optimisticBookings = bookings.filter(
+    (booking) => !deletedIds.includes(booking?.id),
+  );
 
   return (
     <ul className="space-y-6">

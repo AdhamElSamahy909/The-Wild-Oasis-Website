@@ -11,10 +11,6 @@ export const dynamic = "force-dynamic";
 export default async function Page() {
   const session = await auth();
 
-  // if (!session) {
-  //   redirect("/login");
-  // }
-
   const guest = await getGuest(session.user.email);
 
   console.log("Guest2: ", guest);

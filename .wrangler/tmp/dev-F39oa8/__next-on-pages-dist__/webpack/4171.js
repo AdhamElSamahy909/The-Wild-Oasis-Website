@@ -1,1 +1,0 @@
-var s={},i=((_,l,u)=>(s.__chunk_4171=(a,o,e)=>{"use strict";e.d(o,{F:()=>c});var n=e(860);let r=/\/\[[^/]+?\](?=\/|$)/;function c(t){return(0,n.m1)(t)&&(t=(0,n.$8)(t).interceptedRoute),r.test(t)}},s));export{i as __getNamedExports};
