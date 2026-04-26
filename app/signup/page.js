@@ -3,12 +3,16 @@
 import Link from "next/link";
 import SubmitButton from "../_components/SubmitButton";
 import { signUpAction } from "../_lib/actions";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 
 export const runtime = "edge";
 
 export default function Page() {
   const [state, formAction] = useActionState(signUpAction, undefined);
+
+  useEffect(() => {
+    if (state?.success) window.location.href = "/account";
+  }, [state]);
 
   return (
     <div className="flex flex-col gap-10 mt-10 items-center">

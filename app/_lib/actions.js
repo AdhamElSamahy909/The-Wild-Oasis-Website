@@ -1,12 +1,9 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { auth, signIn, signOut } from "./auth";
 import { getBookings } from "./data-service";
 import { supabase } from "./supabase";
-import { redirect } from "next/navigation";
 import { hashSync } from "bcrypt-ts";
-import { AuthError } from "next-auth";
 
 export async function updateProfile(formData) {
   try {
@@ -176,6 +173,28 @@ export async function signUpAction(prevState, formData) {
     if (error) {
       console.log("Error during sign up: ", error);
       return { error: "Could not create user. Email might already exist." };
+    }
+
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        console.log("Login error after sign up: ", result.error);
+        return {
+          error:
+            "Account created, but automatic sign-in failed. Please login manually.",
+        };
+      }
+    } catch (err) {
+      console.log("Unexpected error during sign in after sign up: ", err);
+      return {
+        error:
+          "Account created, but automatic sign-in failed. Please login manually.",
+      };
     }
 
     return { success: true, user: data };

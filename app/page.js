@@ -17,7 +17,7 @@ export default function Home() {
 
       <div className="relative z-10 text-center">
         <h1 className="xl:text-8xl text-6xl text-primary-50 mb-10 tracking-tight font-normal">
-          Welcome to paradise.
+          Welcome to retreat.
         </h1>
 
         <Link
